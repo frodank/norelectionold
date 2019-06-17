@@ -24,20 +24,25 @@ internal class ElectionTest {
     }
 
     @Test internal fun `test simple election`(){
-        val result = NorwegianElection(mapOf(Pair(1,1000000)),289).results(mapOf(Pair(1, mapOf(Pair("NA", 2000000)))))
+        val result = NorwegianElection(mapOf(Pair(1,1000000)),mapOf(Pair(1,1)),289).results(mapOf(Pair(1, mapOf(Pair("NA", 2000000)))))
         assertEquals(1, result.size)
         assertEquals(289, result["NA"])
     }
 
     @Test internal fun `illegal instantiations of NorwegianElection`() {
-        assertThrows<IllegalArgumentException> { NorwegianElection(emptyMap(),0) }
-        assertThrows<IllegalArgumentException> { NorwegianElection(emptyMap(),-3) }
-        assertThrows<IllegalArgumentException> { NorwegianElection(mapOf(Pair(1,1)),0) }
-        assertThrows<IllegalArgumentException> { NorwegianElection(mapOf(Pair(1,1)),-1) }
-        assertThrows<IllegalArgumentException> { NorwegianElection(emptyMap(),1) }
+        assertThrows<IllegalArgumentException> { NorwegianElection(emptyMap(),emptyMap(),0) }
+        assertThrows<IllegalArgumentException> { NorwegianElection(emptyMap(),emptyMap(),-3) }
+        assertThrows<IllegalArgumentException> { NorwegianElection(mapOf(Pair(1,1)),emptyMap(),0) }
+        assertThrows<IllegalArgumentException> { NorwegianElection(emptyMap(),mapOf(Pair(1,1)),0) }
+        assertThrows<IllegalArgumentException> { NorwegianElection(mapOf(Pair(1,1)),mapOf(Pair(1,1)),0) }
+        assertThrows<IllegalArgumentException> { NorwegianElection(mapOf(Pair(1,1)),emptyMap(),-1) }
+        assertThrows<IllegalArgumentException> { NorwegianElection(emptyMap(),mapOf(Pair(1,1)),-1) }
+        assertThrows<IllegalArgumentException> { NorwegianElection(mapOf(Pair(1,1)),mapOf(Pair(1,1)),-1) }
+        assertThrows<IllegalArgumentException> { NorwegianElection(mapOf(Pair(1,1)),mapOf(Pair(2,1)),1) }
+        assertThrows<IllegalArgumentException> { NorwegianElection(emptyMap(),emptyMap(),1) }
     }
     @Test internal fun `election 2017`(){
-        val result = NorwegianElection(mandatPoengPerFylke(befolkningPerFylke2012,arealPerFylke2012),169).results(getVotesPerPartyPerCounty(File(ClassLoader.getSystemResource("partifordeling_1_st_2017.csv").file)))
+        val result = NorwegianElection(befolkningPerFylke2012,arealPerFylke2012,169).results(getVotesPerPartyPerCounty(File(ClassLoader.getSystemResource("partifordeling_1_st_2017.csv").file)))
         assertEquals(9, result.size)
         assertEquals(49, result["A"])
         assertEquals(45, result["H"])
@@ -50,7 +55,7 @@ internal class ElectionTest {
         assertEquals(1, result["RØDT"])
     }
     @Test internal fun `election 2013`(){
-        val result = NorwegianElection(mandatPoengPerFylke(befolkningPerFylke2012, arealPerFylke2012),169).results(getVotesPerPartyPerCounty(File(ClassLoader.getSystemResource("partifordeling_1_st_2013.csv").file)))
+        val result = NorwegianElection(befolkningPerFylke2012, arealPerFylke2012,169).results(getVotesPerPartyPerCounty(File(ClassLoader.getSystemResource("partifordeling_1_st_2013.csv").file)))
         assertEquals(8, result.size)
         assertEquals(55, result["A"])
         assertEquals(48, result["H"])
@@ -62,7 +67,7 @@ internal class ElectionTest {
         assertEquals(1, result["MDG"])
     }
     @Test internal fun `election 2009`(){
-        val result = NorwegianElection(mandatPoengPerFylke(befolkningPerFylke2004, arealPerFylke2004),169).results(getVotesPerPartyPerCounty(File(ClassLoader.getSystemResource("partifordeling_1_st_2009.csv").file)))
+        val result = NorwegianElection(befolkningPerFylke2004, arealPerFylke2004,169).results(getVotesPerPartyPerCounty(File(ClassLoader.getSystemResource("partifordeling_1_st_2009.csv").file)))
         assertEquals(7, result.size)
         assertEquals(64, result["A"])
         assertEquals(41, result["FRP"])
@@ -72,6 +77,4 @@ internal class ElectionTest {
         assertEquals(10, result["KRF"])
         assertEquals(2, result["V"])
     }
-    private fun mandatPoengPerFylke(befolkningPerFylke: Map<Int, Int>, arealPerFylke: Map<Int, Int>) = befolkningPerFylke
-            .mapValues { it.value+ arealPerFylke[it.key]!!*1.8 }.mapValues { it.value.toInt() }
 }

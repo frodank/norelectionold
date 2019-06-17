@@ -2,9 +2,11 @@ package election
 
 import java.lang.Math.ceil
 
-class NorwegianElection(private val populationPerCounty: Map<Int, Int>, private val seats: Int) {
+class NorwegianElection(befolkningPerFylke: Map<Int, Int>, arealPerFylke: Map<Int, Int>, private val seats: Int) {
+    private val populationPerCounty: Map<Int, Int>
     init {
-        require(seats>0 && populationPerCounty.isNotEmpty())
+        require(seats>0 && befolkningPerFylke.isNotEmpty() && befolkningPerFylke.keys == arealPerFylke.keys)
+        populationPerCounty=befolkningPerFylke.mapValues { it.value+ arealPerFylke[it.key]!!*1.8 }.mapValues { it.value.toInt() }
     }
 
     fun results(votesPerCandidatePerCounty: Map<Int, Map<String, Int>>)=seatsFromVotes(seats,
